@@ -12,21 +12,8 @@
 
   <!-- Adding the modules, API key, and map constant needed for a full screen map app -->
   <script>
-  
-  // Create map
-  const map = new Map({
-    basemap: "arcgis-topographic" //basemap layer
-  });
-
-  const view = new MapView({
-          map: map,
-          center: [-97.7431, 30.2672], // Longitude, latitude
-          zoom: 13, // Zoom level
-          container: "viewDiv" // Div element
-        });
-
     require([
-     "esri/config",
+      "esri/config",
       "esri/Map",
       "esri/views/MapView",
 
@@ -42,91 +29,98 @@
 
       //add mapview widget (Challenge 3)
       "esri/widgets/Legend"
-
-
     ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer, Editor, Legend) {
+      
+      // Create map
+      const map = new Map({
+        basemap: "arcgis-topographic" //basemap layer
+      });
 
-      //Create legend widget (Challenge 3)
+      const view = new MapView({
+        map: map,
+        center: [-97.7431, 30.2672], // Longitude, latitude
+        zoom: 13, // Zoom level
+        container: "viewDiv" // Div element
+      });
+
+      // Create legend widget (Challenge 3)
       const legend = new Legend({
         view: view
       });
 
-      //show basemap legend
+      // Show basemap legend
       legend.basemapLegendVisible = true;
 
-      //add legend widget to the view
-      view.ui.add(legend, "top-right");
+      // Add legend widget to the view
+      view.ui.add(legend, "top-left");
 
+      // Set API key
       esriConfig.apiKey = "AAPKd03d2b0786ed4b72aa540fbc9cbaa258Qe0F34wevIz2pDoQAxSWMS7CWVypkKFS5BegW2yneQnQDEuJiLMpEmVh4pVD99Ko"; //My key
-      const map = new Map({
-        basemap: "arcgis-topographic" // Basemap layer
+
+      // Adding the const for the graphicslayer
+      const graphicsLayer = new GraphicsLayer();
+      map.add(graphicsLayer);
+
+      // Defining the geometry of the point
+      const point = { //Create a point
+        type: "point",
+        longitude: -97.750689,    //long lat of Stevie Ray Vaughan Statue
+        latitude: 30.263098 
+      };
+
+      // Defining the maker style
+      const simpleMarkerSymbol = {
+        type: "simple-marker",
+        color: [0, 0, 139],  // Color of blues rock
+        outline: {
+          color: [255, 255, 255], // White
+          width: 1
+        }
+      };
+
+      // Defining popup properties
+      const popupTemplate = {
+        title: "{Name}",
+        content: "{Description}"
+      };
+      const attributes = {
+        Name: "Stevie Ray Vaughan Statue",
+        Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
+      };
+
+      // Creating the point
+      const pointGraphic = new Graphic({
+        geometry: point,
+        symbol: simpleMarkerSymbol,
+
+        // Adding popup properties
+        attributes: attributes,
+        popupTemplate: popupTemplate
       });
 
-        //adding the const for the graphicslayer
-        const graphicsLayer = new GraphicsLayer();
-        map.add(graphicsLayer);
+      // Adding the point to the graphicsLayer
+      graphicsLayer.add(pointGraphic);
 
-        //defining the geomeotry of the point
-        const point = { //Create a point
-          type: "point",
-          longitude: -97.750689,    //long lat of Stevie Ray Vaughan Statue
-          latitude: 30.263098 
-        };
-        
-        //defining the maker style
-        const simpleMarkerSymbol = {
-          type: "simple-marker",
-          color: [0, 0, 139],  // Color of blues rock
-          outline: {
-            color: [255, 255, 255], // White
-            width: 1
-          }
-        };
+      // Define a pop-up for usaeduLayer
+      const popupEduusa = {
+        "title": "EDUs",
+        "content": "<b>Name:</b> {NAME}<br><b>Total Enrollment:</b> {TOT_ENROLL}<br>"
+      };
 
-        //defining popup properties
-        const popupTemplate = {
-          title: "{Name}",
-          content: "{Description}"
-        }
-        const attributes = {
-          Name: "Stevie Ray Vaughan Statue",
-          Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
-        }
+      // Adding the const for the feature layer
+      const usaeduLayer = new FeatureLayer({
+        url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
 
-        //creating the point
-        const pointGraphic = new Graphic({
-          geometry: point,
-          symbol: simpleMarkerSymbol,
+        // Adding the popup here
+        outFields: ["NAME","TOT_ENROLL"],
+        popupTemplate: popupEduusa
+      });
 
-          //adding popup properites
-          attributes: attributes,
-          popupTemplate: popupTemplate
-        });
-         
-         //adding the point to the graphicsLayer
-         graphicsLayer.add(pointGraphic);
+      // Adding the feature layer to the map
+      map.add(usaeduLayer);
 
-         // Define a pop-up for usaeduLayer
-         const popupEduusa = {
-            "title": "EDUs",
-            "content": "<b>Name:</b> {NAME}<br><b>Total Enrollment:</b> {TOT_ENROLL}<br>"
-        }
-
-         //adding the const for the feature layer
-         const usaeduLayer = new FeatureLayer({
-          url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
-
-          //adding the popup here
-          outFields: ["NAME","TOT_ENROLL"],
-          popupTemplate: popupEduusa
-        });
-
-        //adding the feature layer to the map
-        map.add(usaeduLayer);
-
-
-        //setting up the icon
-        const airportRenderer = {
+      // Setting up the icon
+      const airportRenderer = {
         "type": "simple",
         "symbol": {
           "type": "picture-marker",
@@ -134,10 +128,9 @@
           "width": "18px",
           "height": "18px"
         }
-      }
+      };
 
-      //const to make the airport labels
-
+      // Const to make the airport labels
       const airportLabels = {
         symbol: {
           type: "text",
@@ -151,92 +144,86 @@
             weight: "normal"
           }
         },
-
         labelPlacement: "above-center",
         labelExpressionInfo: {
           expression: "$feature.Fac_Name"
         }
       };
 
-        const airportLayer = new FeatureLayer({
-          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
-          renderer: airportRenderer,  //calling the icon
+      const airportLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+        renderer: airportRenderer,  //calling the icon
+        definitionExpression: "Fac_Type = 'AIRPORT'", //adding sql to filter for airports
+        labelingInfo: [airportLabels] //adding the labels 
+      });
 
-          definitionExpression: "Fac_Type = 'AIRPORT'", //adding sql to filter for airports
+      // Adding the feature layer to the map
+      map.add(airportLayer);
 
-          labelingInfo: [airportLabels] //adding the labels 
+      // Add constructor for the feature layer
+      const myAirports = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyAirports2/FeatureServer",
 
+        // Adding the popup
+        outFields: ["AirportCode"],
+      });
 
-        });
+      // Define symbol for airport icon (Challenge 1)
+      const airportIconSymbol = {
+        type: "picture-marker",
+        url: "https://sounny.github.io/agol/outline_local_airport_black_24dp.png",
+        width: "24px",
+        height: "24px"
+      };
 
-        //adding the feature layer to the map
-        map.add(airportLayer);
+      // Create the renderer for the myAirports layer using the airport icon symbol
+      const airportIconRenderer = {
+        type: "simple",
+        symbol: airportIconSymbol
+      };
 
-        //add constructor for the feature layer
-        const myAirports = new FeatureLayer({
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyAirports2/FeatureServer",
+      // Set the renderer for the myAirports layer
+      myAirports.renderer = airportIconRenderer;
 
-          //adding the popup
-          outFields: ["AirportCode"],
-        });
+      // Define label properties for the airport layer (Challenge 2)
+      const airportLabel = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#5E8D74",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.AirportCode" // Field containing Airport code
+        }
+      };
 
-        //Define symbol for airport icon (Challenge 1)
-const airportIconSymbol = {
-  type: "picture-marker",
-  url: "https://sounny.github.io/agol/outline_local_airport_black_24dp.png",
-  width: "24px",
-  height: "24px"
-};
+      // Add label to the myAirports layer
+      myAirports.labelingInfo = [airportLabel];
 
-// Create the renderer for the myAirports layer using the airport icon symbol
-const airportIconRenderer = {
-  type: "simple",
-  symbol: airportIconSymbol
-};
+      // Adding feature layer to the map
+      map.add(myAirports);
 
-// Set the renderer for the myAirports layer
-myAirports.renderer = airportIconRenderer;
+      // Set the point layer's LayerInfo
+      const pointInfos = {
+        layer: myAirports
+      };
 
-// Define label properties for the airport layer (Challenge 2)
-const airportLabel = {
-  symbol: {
-    type: "text",
-    color: "#FFFFFF",
-    haloColor: "#5E8D74",
-    haloSize: "2px",
-    font: {
-      size: "12px",
-      family: "Noto Sans",
-      style: "italic",
-      weight: "normal"
-    }
-  },
-  labelPlacement: "above-center",
-  labelExpressionInfo: {
-    expression: "$feature.AirportCode" // Field containing Airport code
-  }
-};
+      // Begin Editor constructor
+      const editor = new Editor({
+        view: view,
+        layerInfos: [pointInfos]
+      }); // End Editor constructor
 
-// Add label to the myAirports layer
-myAirports.labelingInfo = [airportLabel];
-
-        //adding feature layer to the map
-        map.add(myAirports)
-
-        // Set the point layer's LayerInfo
-const pointInfos = {
- layer: myAirports
-}
-
-// Begin Editor constructor
-const editor = new Editor({
- view: view,
- layerInfos: [pointInfos]
- }); // End Editor constructor
-
-// Add the widget to the view
-view.ui.add(editor, "top-right");
-
+      // Add the widget to the view
+      view.ui.add(editor, "top-right");
     });
   </script>
 
