@@ -26,10 +26,13 @@
       "esri/layers/FeatureLayer",
 
       //add editor widget
-      "esri/widgets/Editor"
+      "esri/widgets/Editor",
+
+      //add mapview widget (Challenge 3)
+      "esri/widgets/Legend"
 
 
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer, Editor) {
+    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer, Editor, Legend) {
 
       esriConfig.apiKey = "AAPKd03d2b0786ed4b72aa540fbc9cbaa258Qe0F34wevIz2pDoQAxSWMS7CWVypkKFS5BegW2yneQnQDEuJiLMpEmVh4pVD99Ko"; //My key
       const map = new Map({
@@ -160,6 +163,46 @@
           //adding the popup
           outFields: ["AirportCode"],
         });
+
+        //Define symbol for airport icon (Challenge 1)
+const airportIconSymbol = {
+  type: "picture-marker",
+  url: "https://sounny.github.io/agol/outline_local_airport_black_24dp.png",
+  width: "24px",
+  height: "24px"
+};
+
+// Create the renderer for the myAirports layer using the airport icon symbol
+const airportIconRenderer = {
+  type: "simple",
+  symbol: airportIconSymbol
+};
+
+// Set the renderer for the myAirports layer
+myAirports.renderer = airportIconRenderer;
+
+// Define label properties for the airport layer (Challenge 2)
+const airportLabel = {
+  symbol: {
+    type: "text",
+    color: "#FFFFFF",
+    haloColor: "#5E8D74",
+    haloSize: "2px",
+    font: {
+      size: "12px",
+      family: "Noto Sans",
+      style: "italic",
+      weight: "normal"
+    }
+  },
+  labelPlacement: "above-center",
+  labelExpressionInfo: {
+    expression: "$feature.AirportCode" // Field containing Airport code
+  }
+};
+
+// Add label to the myAirports layer
+myAirports.labelingInfo = [airportLabel];
 
         //adding feature layer to the map
         map.add(myAirports)
