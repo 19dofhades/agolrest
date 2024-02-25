@@ -29,10 +29,10 @@
 
       //add mapview widget (Challenge 3)
       "esri/widgets/Legend"
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer, Editor, Legend) {
+    ], function (esriConfig, EsriMap, MapView, Graphic, GraphicsLayer, FeatureLayer, Editor, Legend) {
       
       // Create map
-      const map = new Map({
+      const map = new EsriMap({
         basemap: "arcgis-topographic" //basemap layer
       });
 
@@ -52,7 +52,7 @@
       legend.basemapLegendVisible = true;
 
       // Add legend widget to the view
-      view.ui.add(legend, "top-left");
+      view.ui.add(legend, "top-right");
 
       // Set API key
       esriConfig.apiKey = "AAPKd03d2b0786ed4b72aa540fbc9cbaa258Qe0F34wevIz2pDoQAxSWMS7CWVypkKFS5BegW2yneQnQDEuJiLMpEmVh4pVD99Ko"; //My key
@@ -154,7 +154,8 @@
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
         renderer: airportRenderer,  //calling the icon
         definitionExpression: "Fac_Type = 'AIRPORT'", //adding sql to filter for airports
-        labelingInfo: [airportLabels] //adding the labels 
+        labelingInfo: [airportLabels] //
+ 
       });
 
       // Adding the feature layer to the map
